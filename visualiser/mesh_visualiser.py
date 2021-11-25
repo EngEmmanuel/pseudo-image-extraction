@@ -21,6 +21,7 @@ class MeshVisualiser:
         self.slices = self._sliceMaker()
 
         csvPath = self.sliceDir / self.csvName
+
         self.df = pd.read_excel(csvPath, engine='openpyxl')
 
 
@@ -102,6 +103,7 @@ class MeshVisualiser:
         for i, p in enumerate(paths):
             sliceRows = temp.loc[temp["source_file"] == str(p)]
             landmarks[modelNo[i]] = np.array(eval(sliceRows["landmarks"].iloc[0]))
+
         return landmarks
 
     def _sphereMaker(self, modelNo):
