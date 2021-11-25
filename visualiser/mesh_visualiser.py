@@ -29,7 +29,11 @@ class MeshVisualiser:
         x.replace("array(", "").replace(")", ""))
 
     def _readAsArray(self, x):
-        return x.replace("array(", "").replace(")", "")
+        '''
+            Removes unnecessary words and parentheses from the arrays 
+            and returns a numpy array
+        '''
+        return np.array("(" + x.replace("(","").replace(")","").replace("array","") + ")")
 
     def _getFiles(self, dirPath):
         '''
