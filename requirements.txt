@@ -7,3 +7,4 @@ scipy>=1.4.1
 scikit-image>=0.16.2
 torchvision>=0.6.0
 pandas>=1.0.0
+python-box>=5.4.1
