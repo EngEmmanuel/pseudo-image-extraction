@@ -12,9 +12,10 @@ class MeshVisualiser:
     as well as its derivatives
     '''
 
-    def __init__(self, sliceDir,  dataDir= Path("data/runData"), csvName="vtk_df_0.xlsx"):
+    def __init__(self, sliceDir,  dataDir= Path("data/runData"), modelName = "Full_Heart_w_peri_", csvName="vtk_df_0.xlsx"):
         self.sliceDir = Path(sliceDir)
         self.dataDir = Path(dataDir)
+        self.modelName = modelName
         self.csvName = csvName
 
         self.slicesPerModel = None
@@ -51,7 +52,7 @@ class MeshVisualiser:
         '''
             Constructs a list of paths to models based on model number
         '''
-        return [Path("data/runData/Full_Heart_w_peri_{}.vtk".format(n)) for n in modelNo]
+        return [self.dataDir / (self.modelName + "{}.vtk".format(n)) for n in modelNo]
 
     def _normalise(self, x):
         '''
@@ -68,7 +69,8 @@ class MeshVisualiser:
         self.slicesPerModel = int(
             str(slicePaths[-1]).split("_")[-1].split(".")[0]) + 1
         numHearts = len(slicePaths)/self.slicesPerModel
-        assert not(len(slicePaths) % self.slicesPerModel)
+        assert not(len(slicePaths) % self.slicesPerModel), "Check vtk folder: \
+        An incorrect number of slices was generated from at least one heart model"
 
         slices = {}
         for i in range(int(numHearts)):
@@ -81,14 +83,13 @@ class MeshVisualiser:
             several slices hence the nesting. The outer dimension
             changes with model whilst the inner lists contain data for each model's slices
         '''
-        csvPath = self.sliceDir / self.csvName
-        df = pd.read_excel(csvPath, engine='openpyxl')
-        df["rotation"] = df["rotation"].apply(self._readAsDict)
+        local_df = self.df.copy()
+        local_df["rotation"] = local_df["rotation"].apply(self._readAsDict)
         desiredModelPaths = self._genModelPaths(modelNo)
 
         normals, origins = [], []
         for p in desiredModelPaths:
-            sliceRows = df.loc[df["source_file"] == str(p)]
+            sliceRows = local_df.loc[local_df["source_file"] == str(p)]
 
             sliceNormals = [self._normalise(
                 np.cross(sR["dir_x"], sR["dir_y"])) for sR in sliceRows["rotation"]]
@@ -99,22 +100,26 @@ class MeshVisualiser:
         return origins, normals
 
     def _getLandmarks(self, modelNo):
-        temp = self.df.copy()
-        temp["landmarks"] = temp["landmarks"].apply(self._readAsArray)
+        local_df = self.df.copy()
+        local_df["landmarks"] = local_df["landmarks"].apply(self._readAsArray)
 
         landmarks = {}
         paths = self._genModelPaths(modelNo)
         for i, p in enumerate(paths):
-            sliceRows = temp.loc[temp["source_file"] == str(p)]
+            sliceRows = local_df.loc[local_df["source_file"] == str(p)]
             landmarks[modelNo[i]] = np.array(eval(sliceRows["landmarks"].iloc[0]))
 
         return landmarks
 
     def _sphereMaker(self, modelNo):
+        '''
+            Creates pyvista spheres at the position of the landmarks. Populates the \"landmarks\" member 
+            variable with a dictionary. The key corresponds to the model number and the value contains a list 
+            with the three sphere objects. The positions are read from the output excel file
+        '''
         landmarksDict = self._getLandmarks(modelNo)
         self.landmarks = {m : [pv.Sphere(radius=2, center=point) for point in landmarksDict[m]] for m in modelNo}
         return 
-
 
     def _clipMaker(self, modelNo=(0,)):
         '''
@@ -156,7 +161,6 @@ class MeshVisualiser:
             Display the slices of the models specified by modelNo. For each model,
             a maximum of 'lim' slices are shown
         '''
-        # lim decides max num of slices plotted per model
         pv.set_plot_theme('paraview')
         p = pv.Plotter(shape=(len(modelNo), lim))
         # Generate landmarks
@@ -198,7 +202,6 @@ class MeshVisualiser:
                     for sphere in self.landmarks[key]:
                         p.add_mesh(sphere, color='yellow')
 
-
         p.show()
         return
 
@@ -233,7 +236,9 @@ class MeshVisualiser:
                     p.add_mesh(sphere, color='yellow')
 
         # Get Slices
-        for i in pos:
+        for idx, i in enumerate(pos):
+            if (idx + 1) == lim:
+                break
             p.subplot(1, i)
             p.add_mesh(self.slices[modelNum[0]][i], show_scalar_bar=False)
             # plot landmarks
