@@ -133,6 +133,7 @@ class BaseOptions:
             alignment_transforms=dict(
                 plax=[],
                 apical=[],
+
                 a4ch=[(f.pad, dict(padding=60)),
                       (f.affine, dict(angle=140, translate=(-20, 50), scale=1.0, shear=0)), ],
                 a4ch_viewing=[(f.pad, dict(padding=160)),
@@ -181,6 +182,9 @@ class BaseOptions:
                     it.CropToAttribute(),
                     it.SqueezeHorizontalByAttribute(wr),
                     it.MoveAttributeWithinCone(), ],
+                v2=[
+                    it.CenterAndRotateLV(degrees=(-100,100), apex_pos=(0.4,0.3))
+                ]
             ),
             # These are appearance transforms that are applied to only the pseudo image (so no movement should be
             # included). All transforms should follow the torchvision transforms style
