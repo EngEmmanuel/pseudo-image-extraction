@@ -32,7 +32,7 @@ class CenterAndRotateLV(TransformBase):
     cone origin.
     """
 
-    def __init__(self, degrees: tuple, apex_pos: tuple, shift_apex_to_top=False, apex_at_bottom=False):
+    def __init__(self, degrees: tuple, apex_pos: tuple, shift_apex=None):
         """
         :param degrees: tuple of (min, max) degrees of rotation counter-clockwise, will be sampled uniformly
         :param apex_pos: tuple of (min, max) apex positions in terms of percentage of image size.
@@ -40,8 +40,8 @@ class CenterAndRotateLV(TransformBase):
         """
         assert len(degrees) == len(apex_pos) == 2, "degrees and apex_pos must be 2 tuples of (min, max)"
         self.degrees = degrees
-        self.shift_apex_to_top = shift_apex_to_top
-        self.apex_at_bottom = apex_at_bottom
+        assert shift_apex in [None, "top", "bottom"], "shift_apex must be one of [None, \"top\", \"bottom\"]"
+        self.shift_apex = shift_apex
         self.attribute_name = "lv_myocardium"  # This transform only works for LV
         self.apex_pos = apex_pos
 
@@ -115,10 +115,10 @@ class CenterAndRotateLV(TransformBase):
             self.plot_img(img, rotation=angle, pts=dict(center=center, apex=apex))
 
         # Now shift apex to within the range we want
-        if (self.shift_apex_to_top or self.apex_at_bottom):
+        if self.shift_apex is not None:
             apex_shift = self.get_apex_loc(img, apex)
             img = img.transform(img.size, Image.AFFINE, (1, 0, apex_shift[1], 0, 1, apex_shift[0]), fillcolor=0)
-            if self.apex_at_bottom:
+            if self.shift_apex == "bottom":
                 img = img.transpose(method = Image.FLIP_TOP_BOTTOM)
 
         if DEBUG_WITH_IMAGES:
