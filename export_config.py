@@ -183,8 +183,11 @@ class BaseOptions:
                     it.SqueezeHorizontalByAttribute(wr),
                     it.MoveAttributeWithinCone(), ],
                 v2=[
-                    it.CenterAndRotateLV(degrees=(-100,100), apex_pos=(0.4,0.3))
-                ]
+                    it.CenterAndRotateLV(degrees=(-30,-5), apex_pos=(0.05,0.15), shift_apex_to_top=True, apex_at_bottom=True)
+                ],
+                v3=[
+                    it.CenterAndRotateLV(degrees=(-90,-40), apex_pos=(0.05,0.15), shift_apex_to_top=False, apex_at_bottom=False)
+                ],
             ),
             # These are appearance transforms that are applied to only the pseudo image (so no movement should be
             # included). All transforms should follow the torchvision transforms style
