@@ -172,21 +172,22 @@ class BaseOptions:
                 default=[],
                 a4ch=[
                     it.RandomChoiceAttribute(names=("lv_myocardium", "pericardium"), probs=(lv_p, peri_p)),
-                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex_to_top=True),
+                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex = "top"),
                     it.CropToAttribute(),
                     it.SqueezeHorizontalByAttribute(wr),
                     it.MoveAttributeWithinCone(), ],
                 a2ch=[
                     it.RandomChoiceAttribute(names=("lv_myocardium", "pericardium"), probs=(lv_p, peri_p)),
-                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex_to_top=True),
+                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex = "top"),
                     it.CropToAttribute(),
                     it.SqueezeHorizontalByAttribute(wr),
                     it.MoveAttributeWithinCone(), ],
                 v2=[
-                    it.CenterAndRotateLV(degrees=(-30,-5), apex_pos=(0.05,0.15), shift_apex_to_top=True, apex_at_bottom=True)
+                    it.CenterAndRotateLV(degrees=(-30,-5), apex_pos=(0.05,0.15), shift_apex = "bottom")
                 ],
                 v3=[
-                    it.CenterAndRotateLV(degrees=(-90,-40), apex_pos=(0.05,0.15), shift_apex_to_top=False, apex_at_bottom=False)
+                    #it.CenterAndRotateLV(degrees=(-90,-40), apex_pos=(0.05,0.15), shift_apex = "bottom")
+                    it.CenterAndRotateLV(degrees=(-0,0), apex_pos=(0.05,0.15))
                 ],
             ),
             # These are appearance transforms that are applied to only the pseudo image (so no movement should be
