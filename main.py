@@ -24,7 +24,7 @@ def main(output_dir ,view, name, data_dir = Path("data/runData"), exclude_vtk=Fa
      exclude_vtk = "--exclude_vtk" if exclude_vtk else ""
 
      # Delete folder of previous .vtk slices before creating new ones 
-     delPath = output_dir / "{}/vtk".format(name)
+     delPath = output_dir / name / "vtk"
      try:
           rmtree(delPath)
      except OSError as e:
@@ -50,7 +50,7 @@ def main(output_dir ,view, name, data_dir = Path("data/runData"), exclude_vtk=Fa
 
 if __name__ == "__main__":
      # Define directories and slices 
-     view= "v4" 
+     view= "v3" 
      name= view
      output_dir  = Path("exp_output_dir")
 
