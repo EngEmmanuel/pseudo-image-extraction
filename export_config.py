@@ -143,7 +143,8 @@ class BaseOptions:
                 #ME
                 v1=[],
                 v2=[],
-                v3=[],
+                v3=[(f.pad, dict(padding=80)),
+                      (f.affine, dict(angle=-90, translate=(-50, 50), scale=1.0, shear=0)), ],
                 v4=[],
                 v5=[],
                 v6=[],
@@ -172,21 +173,22 @@ class BaseOptions:
                 default=[],
                 a4ch=[
                     it.RandomChoiceAttribute(names=("lv_myocardium", "pericardium"), probs=(lv_p, peri_p)),
-                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex_to_top=True),
+                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex = "top"),
                     it.CropToAttribute(),
                     it.SqueezeHorizontalByAttribute(wr),
                     it.MoveAttributeWithinCone(), ],
                 a2ch=[
                     it.RandomChoiceAttribute(names=("lv_myocardium", "pericardium"), probs=(lv_p, peri_p)),
-                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex_to_top=True),
+                    it.CenterAndRotateLV(degrees=(-15, 15), apex_pos=(.05, .15), shift_apex = "top"),
                     it.CropToAttribute(),
                     it.SqueezeHorizontalByAttribute(wr),
                     it.MoveAttributeWithinCone(), ],
                 v2=[
-                    it.CenterAndRotateLV(degrees=(-30,-5), apex_pos=(0.05,0.15), shift_apex_to_top=True, apex_at_bottom=True)
+                    it.CenterAndRotateLV(degrees=(-30,-5), apex_pos=(0.05,0.15), shift_apex = "bottom")
                 ],
                 v3=[
-                    it.CenterAndRotateLV(degrees=(-90,-40), apex_pos=(0.05,0.15), shift_apex_to_top=False, apex_at_bottom=False)
+                    it.RandomChoiceAttribute(names=("lv_myocardium", "pericardium"), probs=(lv_p, peri_p)),
+                    it.SqueezeHorizontalByAttribute(wr), 
                 ],
             ),
             # These are appearance transforms that are applied to only the pseudo image (so no movement should be
