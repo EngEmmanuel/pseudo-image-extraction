@@ -24,11 +24,12 @@ def main(output_dir ,view, name, data_dir = Path("data/runData"), exclude_vtk=Fa
      exclude_vtk = "--exclude_vtk" if exclude_vtk else ""
 
      # Delete folder of previous .vtk slices before creating new ones 
-     delPath = output_dir / name / "vtk"
-     try:
-          rmtree(delPath)
-     except OSError as e:
-          print("Error: %s - %s." % (e.filename, e.strerror))
+     if exclude_vtk == "":
+          delPath = output_dir / name / "vtk"
+          try:
+               rmtree(delPath)
+          except OSError as e:
+               print("Error: %s - %s." % (e.filename, e.strerror))
 
      
      system("python create_seg_dataset.py \
@@ -51,17 +52,19 @@ def main(output_dir ,view, name, data_dir = Path("data/runData"), exclude_vtk=Fa
 if __name__ == "__main__":
      # Define directories and slices 
      view= "v3" 
-     name= view
+     name= view +"_temp"
      output_dir  = Path("exp_output_dir")
 
      # Generate slices 
-     main(output_dir =output_dir , view=view, name=name, exclude_vtk=False, show_plots=False)
+     main(output_dir =output_dir , view=view, name=name, exclude_vtk=True, show_plots=False)
 
 
      # Plot the .vtk files using the mesh_visualiser
-     #sliceDir = output_dir / name
+     vtk_source_dir = Path("output_dir")
+     sliceDir = vtk_source_dir / name
      #vis = MeshVisualiser(sliceDir)
      #vis.verificationView(modelNum=(1,))
+     #vis.sliceView()
 
 
      # Unpickle output files
@@ -69,7 +72,7 @@ if __name__ == "__main__":
      #readPickle(name, pkl_fname="vtk_df_0.pck", output_dir= output_dir)
 
      
-
+# blah
 # TODO What do the images look like when you align slices?
      # NO images are generated when this is the case
 # TODO How do the transforms in export_..py affect the final pseudo images?
